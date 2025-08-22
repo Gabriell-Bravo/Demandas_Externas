@@ -77,6 +77,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = '/Cadastro_Demandas/'
+LOGOUT_REDIRECT_URL = '/'
 # Internationalization
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
@@ -102,12 +105,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Se quiser desativar completamente o banco de dados (modo manutenção)
 # descomente as linhas abaixo:
-MIDDLEWARE = [
-     'django.middleware.security.SecurityMiddleware',
-     'whitenoise.middleware.WhiteNoiseMiddleware',
- ]
+# MIDDLEWARE = [
+#      'django.middleware.security.SecurityMiddleware',
+#      'whitenoise.middleware.WhiteNoiseMiddleware',
+#  ]
 
-INSTALLED_APPS = [
-    'django.contrib.staticfiles',
-     'App'
- ]
+# INSTALLED_APPS = [
+#     'django.contrib.staticfiles',
+#      'App'
+#  ]
