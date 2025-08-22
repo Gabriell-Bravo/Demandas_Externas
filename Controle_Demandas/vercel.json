@@ -13,11 +13,11 @@
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "Controle_Demandas/staticfiles/$1"
+      "dest": "/static/$1"
     },
     {
       "src": "/media/(.*)",
-      "dest": "Controle_Demandas/mediafiles/$1"
+      "dest": "/media/$1"
     },
     {
       "src": "/(.*)",
