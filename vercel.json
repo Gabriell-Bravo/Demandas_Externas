@@ -1,0 +1,25 @@
+{
+  "builds": [
+    {
+      "src": "Controle_Demandas/wsgi.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "static/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "Controle_Demandas/wsgi.py"
+    }
+  ],
+  "env": {
+    "SECRET_KEY": "@controle-demandas_secret_key"
+  }
+}
