@@ -8,6 +8,13 @@
         "maxLambdaSize": "15mb",
         "runtime": "python3.9"
       }
+    },
+    {
+      "src": "build.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "staticfiles"
+      }
     }
   ],
   "routes": [
@@ -23,5 +30,9 @@
       "src": "/(.*)",
       "dest": "Controle_Demandas/wsgi.py"
     }
-  ]
+  ],
+  "env": {
+    "SECRET_KEY": "@secret_key",
+    "POSTGRES_URL": "@postgres_url"
+  }
 }
