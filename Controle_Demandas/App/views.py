@@ -3,7 +3,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from .forms import Appform
-from .models import AppModel, Anexo, Tarefa # Adicionei Tarefa aqui
+from .models import AppModel, Anexo, Tarefa 
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import json
 
 def login_view(request):
     if request.method == 'POST':
@@ -74,3 +77,19 @@ def excluir_demanda(request, id):
         demanda.delete()
         return redirect('Exibir_Painel')
     return render(request, 'confirmar_exclusao.html', {'demanda': demanda})
+
+@require_POST
+def atualizar_status_tarefa(request, tarefa_id):
+    """
+    Atualiza o status de conclusão de uma tarefa.
+    """
+    try:
+        tarefa = Tarefa.objects.get(id=tarefa_id)
+        data = json.loads(request.body)
+        tarefa.concluida = data.get('concluida', False)
+        tarefa.save()
+        return JsonResponse({'success': True})
+    except Tarefa.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Tarefa não encontrada'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)

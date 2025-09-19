@@ -318,6 +318,40 @@
             });
         }
     </script>
+    <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+        function updateTaskStatus(taskId, isChecked) {
+            const csrftoken = getCookie('csrftoken');
+            fetch(`/tarefas/${taskId}/concluir/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ 'concluida': isChecked })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Falha ao atualizar a tarefa.');
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+    </script>
 </body>
 
 </html>

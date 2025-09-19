@@ -10,4 +10,5 @@ urlpatterns = [
     path('', RedirectView.as_view(url='Login/', permanent=False)),
      path('editar/<int:id>/', views.editar_demanda, name='editar_demanda'),
     path('excluir/<int:id>/', views.excluir_demanda, name='excluir_demanda'),
+     path('tarefas/<int:tarefa_id>/concluir/', views.atualizar_status_tarefa, name='atualizar_status_tarefa'),
 ]
