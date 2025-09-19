@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+# views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from .forms import DemandaForm  # Assumindo que você tem um forms.py com DemandaForm
+from .forms import Appform
+from .models import AppModel, Anexo, Tarefa # Adicionei Tarefa aqui
 
 def login_view(request):
     if request.method == 'POST':
@@ -16,40 +17,60 @@ def login_view(request):
             messages.error(request, 'Usuário ou senha inválidos.')
     return render(request, 'login.html')
 
-@login_required
 def Exibir_Cadastro_Demandas(request):
-    # Se você tiver um formulário, descomente as linhas abaixo
-    # if request.method == 'POST':
-    #     form = DemandaForm(request.POST, request.FILES)
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect('Exibir_Painel')
-    # else:
-    #     form = DemandaForm()
-    # return render(request, 'index.html', {'form': form})
-    return render(request, 'index.html', {'form': None})
+    if request.method == 'POST':
+        form = Appform(request.POST, request.FILES)
+        if form.is_valid():
+            demanda = form.save()
+            
+            # --- CORREÇÃO: Lógica para salvar as tarefas ---
+            tarefas_list = request.POST.getlist('tarefas[]')
+            for tarefa_descricao in tarefas_list:
+                if tarefa_descricao: # Garante que a descrição não está vazia
+                    Tarefa.objects.create(
+                        demanda=demanda,
+                        descricao=tarefa_descricao
+                    )
+            
+            # Handle multiple file uploads
+            files = request.FILES.getlist('anexos') # 'anexos' is the name of your file input
+            for f in files:
+                Anexo.objects.create(demanda=demanda, arquivo=f, nome=f.name)
+            
+            return redirect('Exibir_Painel')
+    else:
+        form = Appform()
+    return render(request, 'index.html', {'form': form})
 
-@login_required
 def Exibir_Painel(request):
-    # Dados de exemplo para demonstração
-    demandas_exemplo = [
-        {
-            'Id_orgao': 'Secretaria de Educação',
-            'Numero_officio': '123/2024',
-            'Numero_Processo': 'PROC-001',
-            'Especie': 'Solicitação',
-            'Objeto': 'Sistema em modo de demonstração no Vercel',
-            'Direcionamento': 'Departamento de TI',
-            'Anexo': None,
-            'Prazo_Resposta': '30 dias',
-            'Data_Prazo': '2024-02-15',
-            'Monitoramento': 'Em análise',
-            'Data_Monitoramento': '2024-01-20',
-            'Indexacao': 'Demonstração'
-        }
-    ]
-    return render(request, 'Painel.html', {'demandas': demandas_exemplo})
+    # --- CORREÇÃO: Uso de prefetch_related para carregar tarefas eficientemente ---
+    demandas = AppModel.objects.all().prefetch_related('tarefas')
+    return render(request, 'Painel.html', {'demandas': demandas})
 
-def logout_view(request):
-    logout(request)
-    return redirect('exibir_login')
+def editar_demanda(request, id):
+    demanda = get_object_or_404(AppModel, id=id)
+    if request.method == 'POST':
+        form = Appform(request.POST, request.FILES, instance=demanda)
+        if form.is_valid():
+            form.save()
+            
+            # Handle new file uploads during edit
+            files = request.FILES.getlist('anexos')
+            for f in files:
+                Anexo.objects.create(demanda=demanda, arquivo=f, nome=f.name)
+                
+            return redirect('Exibir_Painel')
+    else:
+        form = Appform(instance=demanda)
+    
+    # Pass existing annexes and tasks to the template for display
+    anexos = demanda.anexos.all()
+    tarefas = demanda.tarefas.all()
+    return render(request, 'editar_demanda.html', {'form': form, 'demanda': demanda, 'anexos': anexos, 'tarefas': tarefas})
+
+def excluir_demanda(request, id):
+    demanda = get_object_or_404(AppModel, id=id)
+    if request.method == 'POST':
+        demanda.delete()
+        return redirect('Exibir_Painel')
+    return render(request, 'confirmar_exclusao.html', {'demanda': demanda})

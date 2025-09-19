@@ -1,161 +1,322 @@
+{% load static %}
 <!doctype html>
 <html lang="pt-BR" data-bs-theme="dark">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Controle de demandas</title>
+    <title>{% block title %}Controle de demandas{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <style>
+        .action-dropdown {
+            position: relative;
+        }
 
+        .dropdown-toggle::after {
+            display: none;
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        /* Estilos para os formulários */
+        .form-control,
+        .form-select {
+            background-color: transparent;
+            color: var(--bs-body-color);
+            border-color: var(--bs-border-color);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: transparent;
+            color: var(--bs-body-color);
+        }
+
+        .form-label {
+            color: var(--bs-body-color);
+        }
+
+        .offcanvas-body .form-control,
+        .offcanvas-body .form-select {
+            background-color: var(--bs-tertiary-bg);
+            border-color: var(--bs-border-color);
+        }
     </style>
 </head>
 
 <body>
+    {% include 'menu.html' %}
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#"><img width="150px"
-                    src="https://www.saquarema.rj.gov.br/wp-content/uploads/2025/01/LogoSite_PrefeituraSaquarema_800xProporcional.png"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Controle de Demandas</h1>
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDemanda"
+                aria-controls="offcanvasDemanda">
+                <i class="fas fa-plus"></i> Nova Demanda
             </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link " aria-current="page" href="/Cadastro_Demandas">Cadastrar</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Painel">Painel</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="teste.html">n sei ainda</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Perfil
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Login">Sair</a></li>
-                            <!-- <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li> -->
-                        </ul>
-                    </li>
-                </ul>
-
-                <form class="d-flex " role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                    <button class="btn btn-outline-primary" type="submit">Search</button>
-                </form>
-            </div>
         </div>
-    </nav>
 
-    <div class="table-responsive small mt-5 pt-5">
-        <form   action="/Painel" method="post">
-            {% csrf_token %}
+        <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-        {% comment %} <th scope="col">ID</th> {% endcomment %}
-        <th scope="col">Órgão</th>
-        <th scope="col">Número do Ofício</th>
-        <th scope="col">Número Processo</th>
-        <th scope="col">Especie</th>
-        <th scope="col">Objeto</th>
-        <th scope="col">Direcionamento</th>
-        <th scope="col">Anexo</th>
-        <th scope="col">Prazo Resposta</th>
-        <th scope="col">Data Prazo</th>
-        <th scope="col">Monitoramento</th>
-        <th scope="col">Data Monitoramento</th>
-        <th scope="col">Indexação</th>
-    </tr>
-    </thead>
-    <tbody>
-        {% for demanda in demandas %}
-        <tr>
-            {% comment %} <td>{{ demanda.id }}</td> {% endcomment %}
-            <td>{{ demanda.Id_orgao }}</td>
-            <td>{{ demanda.Numero_officio }}</td>
-            <td>{{ demanda.Numero_Processo }}</td>
-            <td>{{ demanda.Especie }}</td>
-            <td>{{ demanda.Objeto }}</td>
-            <td>{{ demanda.Direcionamento }}</td>
-            <td>
-                {% if demanda.Anexo %}
-                    <a href="{{ demanda.Anexo.url }}" target="_blank">Ver anexo</a>
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-            <td>{{ demanda.Prazo_Resposta }}</td>
-            <td>{{ demanda.Data_Prazo }}</td>
-            <td>{{ demanda.Monitoramento }}</td>
-            <td>{{ demanda.Data_Monitoramento }}</td>
-            <td>{{ demanda.Indexacao }}</td>
-        </tr>
-                    
+                        <th scope="col">Id orgao</th>
+                        <th scope="col">Numero officio</th>
+                        <th scope="col">Numero Processo</th>
+                        <th scope="col">Especie</th>
+                        <th scope="col">Objeto</th>
+                        <th scope="col">OBSERVAÇÃO</th>
+                        <th scope="col">Tarefas</th>
+                        <th scope="col">Direcionamento</th>
+                        <th scope="col">Anexo(s)</th>
+                        <th scope="col">Prazo Resposta</th>
+                        <th scope="col">Data Prazo</th>
+                        <th scope="col">Monitoramento</th>
+                        <th scope="col">Data Monitoramento</th>
+                        <th scope="col">Indexação</th>
+                        <th scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for demanda in demandas %}
+                    <tr>
+                        <td>{{ demanda.Id_orgao }}</td>
+                        <td>{{ demanda.Numero_officio }}</td>
+                        <td>{{ demanda.Numero_Processo }}</td>
+                        <td>{{ demanda.Especie }}</td>
+                        <td>{{ demanda.Objeto }}</td>
+                        <td>{{ demanda.OBSERVAÇÃ }}</td>
+                        <td>
+                            {% if demanda.tarefas.all %}
+                            <ul class="list-unstyled">
+                                {% for tarefa in demanda.tarefas.all %}
+                                <li>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox"
+                                            id="tarefa-{{ tarefa.id }}"
+                                            {% if tarefa.concluida %}checked{% endif %}
+                                            onchange="updateTaskStatus('{{ tarefa.id }}', this.checked)">
+                                        <label class="form-check-label" for="tarefa-{{ tarefa.id }}">
+                                            {{ tarefa.descricao }}
+                                        </label>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>{{ demanda.Direcionamento }}</td>
+                        <td>
+                            {% if demanda.anexos.all %}
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-info dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Ver Anexos
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for anexo in demanda.anexos.all %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ anexo.arquivo.url }}" target="_blank">
+                                            {{ anexo.arquivo.name|cut:"anexos/" }}
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>{{ demanda.Prazo_Resposta }}</td>
+                        <td>
+                            {% if demanda.Data_Prazo %}
+                            {{ demanda.Data_Prazo|date:"d/m/Y" }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>{{ demanda.Monitoramento }}</td>
+                        <td>
+                            {% if demanda.Data_Monitoramento %}
+                            {{ demanda.Data_Monitoramento|date:"d/m/Y" }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>{{ demanda.Indexacao }}</td>
+                        <td>
+                            <td>
+                                <div class="dropdown action-dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle action-btn" type="button" 
+                                            id="dropdownMenuButton_{{ demanda.id }}"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        •••
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton_{{ demanda.id }}">
+                                        <li><a class="dropdown-item" href="{% url 'editar_demanda' demanda.id %}">Editar</a></li>
+                                        <li>
+                                            <form method="post" action="{% url 'excluir_demanda' demanda.id %}"
+                                                style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="dropdown-item"
+                                                    onclick="return confirm('Tem certeza que deseja excluir esta demanda?');">Excluir</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="15" class="text-center">Nenhuma demanda registrada.</td>
+                    </tr>
                     {% endfor %}
-                    
                 </tbody>
-                
             </table>
-            
-        </form>
+        </div>
+    </div>
 
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasDemanda" aria-labelledby="offcanvasDemandaLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasDemandaLabel">Nova Demanda</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_Id_orgao" class="form-label">Id do Órgão</label>
+                    <input type="text" class="form-control" id="id_Id_orgao" name="Id_orgao">
+                </div>
+                <div class="mb-3">
+                    <label for="id_Numero_officio" class="form-label">Número do Ofício</label>
+                    <input type="text" class="form-control" id="id_Numero_officio" name="Numero_officio">
+                </div>
+                <div class="mb-3">
+                    <label for="id_Numero_Processo" class="form-label">Número do Processo</label>
+                    <input type="text" class="form-control" id="id_Numero_Processo" name="Numero_Processo">
+                </div>
+                <div class="mb-3">
+                    <label for="id_Especie" class="form-label">Espécie</label>
+                    <input type="text" class="form-control" id="id_Especie" name="Especie">
+                </div>
+                <div class="mb-3">
+                    <label for="id_Objeto" class="form-label">Objeto</label>
+                    <input type="text" class="form-control" id="id_Objeto" name="Objeto">
+                </div>
+                <div class="mb-3">
+                    <label for="id_OBSERVAÇÃ" class="form-label">Observação</label>
+                    <textarea class="form-control" id="id_OBSERVAÇÃ" name="OBSERVAÇÃ" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="id_TAREFAS" class="form-label">Tarefas</label>
+                    <input type="text" class="form-control" id="id_TAREFAS" name="TAREFAS">
+                </div>
+                <div class="mb-3">
+                    <label for="id_Direcionamento" class="form-label">Direcionamento</label>
+                    <input type="text" class="form-control" id="id_Direcionamento" name="Direcionamento">
+                </div>
+                <div class="mb-3">
+                    <label for="id_Prazo_Resposta" class="form-label">Prazo de Resposta</label>
+                    <input type="text" class="form-control" id="id_Prazo_Resposta" name="Prazo_Resposta">
+                </div>
+                <div class="mb-3">
+                    <label for="id_Data_Prazo" class="form-label">Data Limite</label>
+                    <input type="date" class="form-control" id="id_Data_Prazo" name="Data_Prazo">
+                </div>
+                <div class="mb-3">
+                    <label for="id_Monitoramento" class="form-label">Monitoramento</label>
+                    <input type="text" class="form-control" id="id_Monitoramento" name="Monitoramento">
+                </div>
+                <div class="mb-3">
+                    <label for="id_Data_Monitoramento" class="form-label">Data de Monitoramento</label>
+                    <input type="date" class="form-control" id="id_Data_Monitoramento" name="Data_Monitoramento">
+                </div>
+                <div class="mb-3">
+                    <label for="id_Indexacao" class="form-label">Indexação</label>
+                    <input type="text" class="form-control" id="id_Indexacao" name="Indexacao">
+                </div>
+                <div class="mb-3">
+                    <label for="id_anexos" class="form-label">Anexos</label>
+                    <input type="file" class="form-control" id="id_anexos" name="anexos" multiple>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </form>
+        </div>
     </div>
 
 
-
-    <div class="form-check form-switch ms-auto fixed-bottom">
-        <input class="form-check-input" type="checkbox" id="darkModeSwitch">
-        <label class="form-check-label" for="darkModeSwitch">Modo Escuro</label>
-    </div>
-    <script src="{% static 'js/dashboard.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
-        crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
-        // Obtenha o elemento HTML raiz
-        const htmlElement = document.documentElement;
-        // Obtenha o switch do modo escuro
-        const darkModeSwitch = document.getElementById('darkModeSwitch');
-
-        // Função para aplicar o tema
         function applyTheme(theme) {
-            htmlElement.setAttribute('data-bs-theme', theme);
-            localStorage.setItem('bsTheme', theme); // Salva a preferência no armazenamento local
-            darkModeSwitch.checked = (theme === 'dark'); // Atualiza o estado do switch
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('bsTheme', theme);
+            const darkModeSwitch = document.getElementById('darkModeSwitch');
+            if (darkModeSwitch) {
+                darkModeSwitch.checked = (theme === 'dark');
+            }
         }
 
-        // Carrega o tema salvo ou define um padrão (auto/light)
         const savedTheme = localStorage.getItem('bsTheme');
         if (savedTheme) {
             applyTheme(savedTheme);
         } else {
-            // Se não houver tema salvo, verifica a preferência do sistema
-            // Pode ser 'dark' ou 'light' ou 'auto'
-            // 'auto' faria o Bootstrap usar a preferência do SO (media query @media (prefers-color-scheme: dark))
-            // Para simplicidade, vamos usar 'light' como padrão se nada for salvo
-            applyTheme('light');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark ? 'dark' : 'light');
         }
 
+        const darkModeSwitch = document.getElementById('darkModeSwitch');
+        if (darkModeSwitch) {
+            darkModeSwitch.addEventListener('change', function () {
+                if (this.checked) {
+                    applyTheme('dark');
+                } else {
+                    applyTheme('light');
+                }
+            });
+        }
 
-        // Adiciona um listener para o evento de mudança do switch
-        darkModeSwitch.addEventListener('change', function () {
-            if (this.checked) {
-                applyTheme('dark');
-            } else {
-                applyTheme('light');
-            }
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
         });
+    </script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTk7SgXG0/l7G0z+yM7+C3G34uG4oB5mRz6n"
+        crossorigin="anonymous"></script>
+
+    <script>
+        function updateTaskStatus(taskId, isChecked) {
+            fetch(`/tarefas/${taskId}/concluir/`, { // Você precisará criar esta URL e view no Django
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ 'concluida': isChecked })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Falha ao atualizar a tarefa.');
+                }
+            });
+        }
     </script>
 </body>
 

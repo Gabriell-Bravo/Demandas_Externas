@@ -1,0 +1,25 @@
+{% extends 'Painel.html' %}
+
+{% block title %}Confirmar Exclusão - Controle de demandas{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2>Confirmar Exclusão</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-text">Tem certeza que deseja excluir a demanda <strong>"{{ demanda.Objeto }}"</strong>?</p>
+            <p class="text-muted">Número do Ofício: {{ demanda.Numero_officio }}</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+                    <a href="{% url 'Exibir_Painel' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

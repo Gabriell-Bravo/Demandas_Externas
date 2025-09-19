@@ -1,0 +1,216 @@
+{% extends 'Painel.html' %}
+
+{% block title %}Editar Demanda - Controle de demandas{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card form-card">
+        <div class="card-header">
+            <h2 class="mb-0"><i class="bi bi-pencil"></i> Editar Demanda</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row">
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_Id_orgao" class="form-label">Órgão</label>
+                            {{ form.Id_orgao }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_Numero_officio" class="form-label">Número do Ofício</label>
+                            {{ form.Numero_officio }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_Numero_Processo" class="form-label">Número do Processo</label>
+                            {{ form.Numero_Processo }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_Especie" class="form-label">Espécie</label>
+                            {{ form.Especie }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_Objeto" class="form-label">Objeto</label>
+                            {{ form.Objeto }}
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_Direcionamento" class="form-label">Direcionamento</label>
+                            {{ form.Direcionamento }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_Prazo_Resposta" class="form-label">Prazo de Resposta</label>
+                            {{ form.Prazo_Resposta }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_Data_Prazo" class="form-label">Data do Prazo</label>
+                            {{ form.Data_Prazo }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_Monitoramento" class="form-label">Monitoramento</label>
+                            {{ form.Monitoramento }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_Data_Monitoramento" class="form-label">Data do Monitoramento</label>
+                            {{ form.Data_Monitoramento }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_Indexacao" class="form-label">Indexação</label>
+                            {{ form.Indexacao }}
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="mb-3">
+                    <label class="form-label">Anexos Atuais</label>
+                    {% if anexos %}
+                        <ul class="list-group mb-2">
+                            {% for anexo in anexos %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="{{ anexo.arquivo.url }}" target="_blank">
+                                        {{ anexo.arquivo.name|cut:"anexos/" }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Nenhum anexo cadastrado.</p>
+                    {% endif %}
+                    
+                    <label for="id_anexos" class="form-label">Adicionar Anexos (opcional)</label>
+                    <input type="file" name="anexos" id="id_anexos" class="form-control" multiple>
+                    <div class="form-text">Selecione um ou mais arquivos para adicionar.</div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Salvar Alterações
+                    </button>
+                    <a href="{% url 'Exibir_Painel' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        background-color: var(--bs-body-bg);
+        color: var(--bs-body-color);
+        border-color: var(--bs-border-color);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background-color: var(--bs-body-bg);
+        color: var(--bs-body-color);
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-header {
+        background-color: var(--bs-primary);
+        color: white;
+        border-bottom: none;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const dataPrazoField = document.getElementById('id_Data_Prazo');
+        const dataMonitoramentoField = document.getElementById('id_Data_Monitoramento');
+        
+        if (dataPrazoField) {
+            dataPrazoField.placeholder = 'dd/mm/aaaa';
+        }
+        
+        if (dataMonitoramentoField) {
+            dataMonitoramentoField.placeholder = 'dd/mm/aaaa';
+        }
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const dataPrazoField = document.getElementById('id_Data_Prazo');
+        const dataMonitoramentoField = document.getElementById('id_Data_Monitoramento');
+        const monitoramentoField = document.getElementById('id_Monitoramento');
+
+        // Function to format a date to 'YYYY-MM-DD'
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Function to update the monitoring date
+        function updateMonitoramentoDate() {
+            const selectedOption = monitoramentoField.value;
+            const today = new Date();
+            let newDate = new Date();
+
+            switch (selectedOption) {
+                case 'Mensal':
+                    newDate.setMonth(today.getMonth() + 1);
+                    break;
+                case 'Trimestral':
+                    newDate.setMonth(today.getMonth() + 3);
+                    break;
+                case 'Semestral':
+                    newDate.setMonth(today.getMonth() + 6);
+                    break;
+                case 'Anual':
+                    newDate.setFullYear(today.getFullYear() + 1);
+                    break;
+                case 'Não monitorado':
+                    dataMonitoramentoField.value = ''; // Clear the date field
+                    return;
+                default:
+                    return;
+            }
+
+            dataMonitoramentoField.value = formatDate(newDate);
+        }
+
+        if (dataPrazoField) {
+            dataPrazoField.placeholder = 'dd/mm/aaaa';
+        }
+        
+        if (dataMonitoramentoField) {
+            dataMonitoramentoField.placeholder = 'dd/mm/aaaa';
+        }
+        
+        // Add event listener to the "Monitoramento" dropdown
+        if (monitoramentoField) {
+            monitoramentoField.addEventListener('change', updateMonitoramentoDate);
+        }
+
+        // Initialize the date field if a selection is already made
+        if (monitoramentoField && monitoramentoField.value) {
+            updateMonitoramentoDate();
+        }
+    });
+
+</script>
+{% endblock %}
